@@ -74,20 +74,19 @@ instance Pretty PackageSpec where
 
 -- | Generate a list of @PackageSpec@s, one for each component in the cabal file
 fromGenericPackageDescription
-    :: Platform -> CompilerInfo -> GenericPackageDescription -> [NamedPackageSpec]
+  :: Platform -> CompilerInfo -> GenericPackageDescription -> [NamedPackageSpec]
 fromGenericPackageDescription platform compilerInfo gPkgDesc =
   fromPackageDescription desc
  where
   desc =
-    either (error . ("Missing dependencies: " <>) . show) fst
-      $ finalizePD
-        (mkFlagAssignment [])
-        requestedComponents
-        (const True)
-        platform
-        compilerInfo
-        []
-        gPkgDesc
+    either (error . ("Missing dependencies: " <>) . show) fst $ finalizePD
+      (mkFlagAssignment [])
+      requestedComponents
+      (const True)
+      platform
+      compilerInfo
+      []
+      gPkgDesc
 
   requestedComponents :: ComponentRequestedSpec
   requestedComponents = ComponentRequestedSpec False False
@@ -102,49 +101,48 @@ fromPackageDescription packageDesc =
   localDeps = Set.fromList $ packageName : subLibNames
 
   subLibNames :: [String]
-  subLibNames = unUnqualComponentName . fromJust . libName <$> subLibraries packageDesc
+  subLibNames =
+    unUnqualComponentName . fromJust . libName <$> subLibraries packageDesc
 
   packageName :: String
   packageName = unPackageName . pkgName $ package packageDesc
 
 fromLibrary :: String -> Library -> NamedPackageSpec
 fromLibrary name lib = NamedPackageSpec
-  { npsName = name
+  { npsName    = name
   , npsPkgSpec = fromBuildInfo Nothing mempty $ libBuildInfo lib
   }
 
 fromExecutable :: Set String -> Executable -> NamedPackageSpec
 fromExecutable localDeps exe = NamedPackageSpec
-  { npsName = ("exe-" <>) . unUnqualComponentName $ exeName exe
+  { npsName    = ("exe-" <>) . unUnqualComponentName $ exeName exe
   , npsPkgSpec = fromBuildInfo
-      (Just . T.pack . takeBaseName $ modulePath exe)
-      localDeps
-      (buildInfo exe)
+    (Just . T.pack . takeBaseName $ modulePath exe)
+    localDeps
+    (buildInfo exe)
   }
 
 fromBuildInfo :: Maybe Text -> Set String -> BuildInfo -> PackageSpec
 fromBuildInfo main localDeps bi = PackageSpec
-  { psSource = sourceDir
-  , psMain = main
-  , psGhcOptions = maybe mempty Set.fromList $ lookup GHC $ options bi
-  , psDependencies = externalDeps
-  , psExtensions = Set.fromList $ defaultExtensions bi
-  , psExtraFiles = mempty
+  { psSource           = sourceDir
+  , psMain             = main
+  , psGhcOptions       = maybe mempty Set.fromList $ lookup GHC $ options bi
+  , psDependencies     = externalDeps
+  , psExtensions       = Set.fromList $ defaultExtensions bi
+  , psExtraFiles       = mempty
   , psExtraDirectories = mempty
-  , psPackages = packages
+  , psPackages         = packages
   }
  where
   sourceDir :: String
   sourceDir = prefixPath $ head $ hsSourceDirs bi
 
   prefixPath :: String -> String
-  prefixPath path = if isAlpha (head path)
-    then "./" <> path
-    else path
+  prefixPath path = if isAlpha (head path) then "./" <> path else path
 
   allDeps :: Set String
-  allDeps = Set.fromList . fmap (unPackageName . depPkgName)
-    $ targetBuildDepends bi
+  allDeps =
+    Set.fromList . fmap (unPackageName . depPkgName) $ targetBuildDepends bi
 
   packages :: Set String
   externalDeps :: Set String
