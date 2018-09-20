@@ -1,0 +1,31 @@
+name:                cabal2snack
+version:             0.1.0.0
+synopsis:            A tool to generate nix expressions for snack from cabal projects
+description:         A tool to generate nix expressions for snack from cabal projects
+license:             BSD3
+license-file:        LICENSE
+author:              Rupert Horlick
+maintainer:          rupert.horlick@iohk.io
+category:            Development
+build-type:          Simple
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Cabal2Snack
+  other-modules:       Snack.PackageSpec
+  build-depends:       base >=4.11 && <4.12
+                     , cabal2nix
+                     , distribution-nixpkgs
+                     , language-nix
+                     , text
+  default-language:    Haskell2010
+  ghc-options:         -Wall
+                       -Werror
+
+executable cabal2snack
+  hs-source-dirs:      cabal2snack
+  main-is:             Main.hs
+  build-depends:       base >=4.11 && <4.12
+                     , cabal2snack
+  default-language:    Haskell2010
