@@ -3,8 +3,8 @@ let
 snack-src = (import <nixpkgs> {}).fetchFromGitHub {
   repo = "snack";
   owner = "ruhatch";
-  rev = "5f41965d12eadf53403162e930e5c1387890c67f";
-  sha256 = "10hv2an6g9zhfjwg86p97vbm27b123l0fc5x8xqj278dmlg79035";
+  rev = "57f8d198f4bf657a9a770a2a85a3baad47a95766";
+  sha256 = "15v8i6s7h8k2szpijda9m3zl5x0fpz6vk15z5wbqyhr59c0vv4bk";
 };
 
 in
